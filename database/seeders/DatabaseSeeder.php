@@ -19,5 +19,12 @@ class DatabaseSeeder extends Seeder
         $this->call([
          RolSeeder::class,
         ]);
+
+        // Módulo de Control clínico (Integrante 4)
+        $this->call([
+            MedicamentoSeeder::class,
+            VacunaSeeder::class,
+            AplicacionClinicaSeeder::class,
+        ]);
     }
 }
