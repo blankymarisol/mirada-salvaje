@@ -57,6 +57,7 @@
             <a href="{{ route('dietas.index') }}" class="{{ request()->routeIs('dietas.*') ? 'activo' : '' }}">Dietas</a>
             <a href="{{ route('horarios-alimentacion.index') }}" class="{{ request()->routeIs('horarios-alimentacion.*') ? 'activo' : '' }}">Horarios</a>
             <a href="{{ route('inventario-alimentos.index') }}" class="{{ request()->routeIs('inventario-alimentos.*') ? 'activo' : '' }}">Inventario</a>
+            <a href="{{ route('aplicaciones-clinicas.index') }}" class="{{ request()->routeIs('aplicaciones-clinicas.*') ? 'activo' : '' }}">Clínica</a>
         </nav>
         <div class="muted" style="color:#d9e3d3;">
             @auth

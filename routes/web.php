@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AplicacionClinicaController;
 use App\Http\Controllers\DietaController;
 use App\Http\Controllers\HorarioAlimentacionController;
 use App\Http\Controllers\InventarioAlimentoController;
@@ -30,6 +31,25 @@ Route::resource('horarios-alimentacion', HorarioAlimentacionController::class)
 
 Route::patch('horarios-alimentacion/{horario}/registrar-consumo', [HorarioAlimentacionController::class, 'registrarConsumo'])
     ->name('horarios-alimentacion.registrar-consumo');
+
+/*
+|--------------------------------------------------------------------------
+| Módulo: Control clínico (Integrante 4)
+|--------------------------------------------------------------------------
+| La información clínica es un dato sensible: solo el veterinario y el
+| admin pueden acceder (middleware rol-veterinario). Incluye la alerta
+| de vacunas con próxima dosis vencida o próxima (tarea del 17 sep).
+*/
+Route::middleware('rol-veterinario')->group(function () {
+    Route::get('aplicaciones-clinicas/alertas', [AplicacionClinicaController::class, 'alertas'])
+        ->name('aplicaciones-clinicas.alertas');
+
+    Route::get('animales/{animal}/historial-clinico', [AplicacionClinicaController::class, 'historial'])
+        ->name('aplicaciones-clinicas.historial');
+
+    Route::resource('aplicaciones-clinicas', AplicacionClinicaController::class)
+        ->parameters(['aplicaciones-clinicas' => 'aplicacionClinica']);
+});
 
 /*
 |--------------------------------------------------------------------------

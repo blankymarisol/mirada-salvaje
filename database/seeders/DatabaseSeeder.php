@@ -45,5 +45,12 @@ class DatabaseSeeder extends Seeder
             DietaSeeder::class,
             HorarioAlimentacionSeeder::class,
         ]);
+
+        // Módulo de Control clínico (Integrante 4)
+        $this->call([
+            MedicamentoSeeder::class,
+            VacunaSeeder::class,
+            AplicacionClinicaSeeder::class,
+        ]);
     }
 }

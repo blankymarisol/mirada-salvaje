@@ -14,7 +14,8 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias([
-        'rol' => \App\Http\Middleware\CheckRol::class,
+            'rol' => \App\Http\Middleware\CheckRol::class,
+            'rol-veterinario' => \App\Http\Middleware\CheckRolVeterinario::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

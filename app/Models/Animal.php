@@ -29,4 +29,9 @@ class Animal extends Model
     {
         return $this->hasMany(Dieta::class);
     }
+
+    public function aplicacionesClinicas(): HasMany
+    {
+        return $this->hasMany(AplicacionClinica::class);
+    }
 }
