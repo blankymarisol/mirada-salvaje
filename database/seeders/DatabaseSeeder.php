@@ -52,5 +52,7 @@ class DatabaseSeeder extends Seeder
             VacunaSeeder::class,
             AplicacionClinicaSeeder::class,
         ]);
+
+        $this->call(EntradasPromocionesSeeder::class);
     }
 }
