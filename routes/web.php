@@ -5,6 +5,10 @@ use App\Http\Controllers\DietaController;
 use App\Http\Controllers\HorarioAlimentacionController;
 use App\Http\Controllers\InventarioAlimentoController;
 use App\Http\Controllers\TareaLimpiezaController;
+use App\Http\Controllers\Publico\EntradaPublicoController;
+use App\Http\Controllers\Admin\TipoEntradaController;
+use App\Http\Controllers\Admin\PromocionController;
+use App\Http\Controllers\Admin\ReporteVentasController;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -52,14 +56,6 @@ Route::middleware('rol-veterinario')->group(function () {
         ->parameters(['aplicaciones-clinicas' => 'aplicacionClinica']);
 });
 
-/*
-|--------------------------------------------------------------------------
-| Módulo: Gestión de limpieza (Integrante 2)
-|--------------------------------------------------------------------------
-| La lista y el reporte están abiertos para poder demostrar el módulo;
-| registrar, editar, eliminar y verificar quedan restringidos a limpieza
-| y admin (middleware rol:limpieza,admin).
-*/
 Route::get('/limpieza', [TareaLimpiezaController::class, 'index'])->name('limpieza.index');
 Route::get('/limpieza/reporte', [TareaLimpiezaController::class, 'reporte'])->name('limpieza.reporte');
 
@@ -71,6 +67,32 @@ Route::middleware('rol:limpieza,admin')->group(function () {
     Route::delete('/limpieza/{tareaLimpieza}', [TareaLimpiezaController::class, 'destroy'])->name('limpieza.destroy');
     Route::patch('/limpieza/{tareaLimpieza}/verificar', [TareaLimpiezaController::class, 'verificar'])->name('limpieza.verificar');
 });
+
+/*
+|--------------------------------------------------------------
+| Módulo: Entradas y promociones (Integrante 5 - Carlos)
+|--------------------------------------------------------------
+| Igual que el módulo de alimentación, el panel interno todavía no tiene
+| login general, así que la parte admin queda TEMPORALMENTE abierta.
+| TODO: cuando se fusione la rama de autenticación, envolver el grupo
+| "admin" de abajo con el middleware de rol que definan (revisar el
+| nombre exacto en app/Http/Kernel.php, probablemente algo como
+| 'rol-admin' o 'rol-recepcion', siguiendo el mismo patrón que
+| 'rol-veterinario' de arriba).
+*/
+
+// --- Parte pública: sin login, cara al visitante ---
+Route::get('/entradas', [EntradaPublicoController::class, 'index'])->name('entradas.publico');
+Route::post('/entradas/comprar', [EntradaPublicoController::class, 'comprar'])->name('entradas.comprar');
+
+// --- Parte administrativa (TEMPORALMENTE sin middleware, ver TODO arriba) ---
+Route::prefix('admin')
+    ->name('admin.')
+    ->group(function () {
+        Route::resource('tipos-entrada', TipoEntradaController::class)->except(['show']);
+        Route::resource('promociones', PromocionController::class)->except(['show']);
+        Route::get('reportes/ventas', [ReporteVentasController::class, 'index'])->name('reportes.ventas');
+    });
 
 /*
 |--------------------------------------------------------------------------
