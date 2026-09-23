@@ -38,6 +38,12 @@ class DatabaseSeeder extends Seeder
             );
         }
 
+        // Módulo de Gestión de limpieza (Integrante 2)
+        $this->call([
+            AreaSeeder::class,
+            TurnoSeeder::class,
+        ]);
+
         // Módulo de Gestión de alimentación (Integrante 3)
         $this->call([
             AnimalSeeder::class,
