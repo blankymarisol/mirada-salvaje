@@ -4,6 +4,7 @@ use App\Http\Controllers\AplicacionClinicaController;
 use App\Http\Controllers\DietaController;
 use App\Http\Controllers\HorarioAlimentacionController;
 use App\Http\Controllers\InventarioAlimentoController;
+use App\Http\Controllers\TareaLimpiezaController;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -49,6 +50,26 @@ Route::middleware('rol-veterinario')->group(function () {
 
     Route::resource('aplicaciones-clinicas', AplicacionClinicaController::class)
         ->parameters(['aplicaciones-clinicas' => 'aplicacionClinica']);
+});
+
+/*
+|--------------------------------------------------------------------------
+| Módulo: Gestión de limpieza (Integrante 2)
+|--------------------------------------------------------------------------
+| La lista y el reporte están abiertos para poder demostrar el módulo;
+| registrar, editar, eliminar y verificar quedan restringidos a limpieza
+| y admin (middleware rol:limpieza,admin).
+*/
+Route::get('/limpieza', [TareaLimpiezaController::class, 'index'])->name('limpieza.index');
+Route::get('/limpieza/reporte', [TareaLimpiezaController::class, 'reporte'])->name('limpieza.reporte');
+
+Route::middleware('rol:limpieza,admin')->group(function () {
+    Route::get('/limpieza/crear', [TareaLimpiezaController::class, 'create'])->name('limpieza.create');
+    Route::post('/limpieza', [TareaLimpiezaController::class, 'store'])->name('limpieza.store');
+    Route::get('/limpieza/{tareaLimpieza}/editar', [TareaLimpiezaController::class, 'edit'])->name('limpieza.edit');
+    Route::put('/limpieza/{tareaLimpieza}', [TareaLimpiezaController::class, 'update'])->name('limpieza.update');
+    Route::delete('/limpieza/{tareaLimpieza}', [TareaLimpiezaController::class, 'destroy'])->name('limpieza.destroy');
+    Route::patch('/limpieza/{tareaLimpieza}/verificar', [TareaLimpiezaController::class, 'verificar'])->name('limpieza.verificar');
 });
 
 /*
