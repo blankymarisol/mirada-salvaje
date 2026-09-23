@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('content')
+@section('contenido')
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center mb-3">
         <h1 class="h3">Tipos de entrada</h1>

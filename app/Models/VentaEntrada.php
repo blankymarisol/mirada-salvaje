@@ -10,6 +10,8 @@ class VentaEntrada extends Model
 {
     use HasFactory;
 
+    protected $table = 'ventas_entradas';
+
     protected $fillable = [
         'tipo_entrada_id', 'promocion_id', 'cantidad', 'precio_unitario', 'total', 'fecha_venta',
     ];
