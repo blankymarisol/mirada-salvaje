@@ -4,6 +4,7 @@ use App\Http\Controllers\AplicacionClinicaController;
 use App\Http\Controllers\DietaController;
 use App\Http\Controllers\HorarioAlimentacionController;
 use App\Http\Controllers\InventarioAlimentoController;
+use App\Http\Controllers\TareaLimpiezaController;
 use App\Http\Controllers\Publico\EntradaPublicoController;
 use App\Http\Controllers\Admin\TipoEntradaController;
 use App\Http\Controllers\Admin\PromocionController;
@@ -55,10 +56,22 @@ Route::middleware('rol-veterinario')->group(function () {
         ->parameters(['aplicaciones-clinicas' => 'aplicacionClinica']);
 });
 
+Route::get('/limpieza', [TareaLimpiezaController::class, 'index'])->name('limpieza.index');
+Route::get('/limpieza/reporte', [TareaLimpiezaController::class, 'reporte'])->name('limpieza.reporte');
+
+Route::middleware('rol:limpieza,admin')->group(function () {
+    Route::get('/limpieza/crear', [TareaLimpiezaController::class, 'create'])->name('limpieza.create');
+    Route::post('/limpieza', [TareaLimpiezaController::class, 'store'])->name('limpieza.store');
+    Route::get('/limpieza/{tareaLimpieza}/editar', [TareaLimpiezaController::class, 'edit'])->name('limpieza.edit');
+    Route::put('/limpieza/{tareaLimpieza}', [TareaLimpiezaController::class, 'update'])->name('limpieza.update');
+    Route::delete('/limpieza/{tareaLimpieza}', [TareaLimpiezaController::class, 'destroy'])->name('limpieza.destroy');
+    Route::patch('/limpieza/{tareaLimpieza}/verificar', [TareaLimpiezaController::class, 'verificar'])->name('limpieza.verificar');
+});
+
 /*
-|--------------------------------------------------------------------------
+|--------------------------------------------------------------
 | Módulo: Entradas y promociones (Integrante 5 - Carlos)
-|--------------------------------------------------------------------------
+|--------------------------------------------------------------
 | Igual que el módulo de alimentación, el panel interno todavía no tiene
 | login general, así que la parte admin queda TEMPORALMENTE abierta.
 | TODO: cuando se fusione la rama de autenticación, envolver el grupo
