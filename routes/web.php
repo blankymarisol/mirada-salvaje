@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\AplicacionClinicaController;
 use App\Http\Controllers\DietaController;
 use App\Http\Controllers\HorarioAlimentacionController;
@@ -14,38 +15,45 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return view('welcome');
-});
+    if (! auth()->check()) {
+        return redirect()->route('login');
+    }
+
+    return view('inicio');
+})->name('inicio');
 
 /*
 |--------------------------------------------------------------------------
 | Módulo: Gestión de alimentación (Integrante 3)
 |--------------------------------------------------------------------------
-| Todavía no existe login del panel interno (lo integra quien arme el
-| panel general en Sprint 2). Mientras tanto estas rutas quedan abiertas
-| para poder demostrar el módulo; la restricción de "solo admin edita
-| stock_minimo" ya está aplicada dentro de UpdateInventarioAlimentoRequest.
+| Ya existe login real: estas rutas ahora requieren sesión iniciada.
+| La restricción de "solo admin edita stock_minimo" sigue aplicada dentro
+| de UpdateInventarioAlimentoRequest.
 */
-Route::resource('dietas', DietaController::class);
+Route::middleware('auth')->group(function () {
+    Route::resource('dietas', DietaController::class);
 
-Route::resource('inventario-alimentos', InventarioAlimentoController::class)
-    ->parameters(['inventario-alimentos' => 'alimento']);
+    Route::resource('inventario-alimentos', InventarioAlimentoController::class)
+        ->parameters(['inventario-alimentos' => 'alimento']);
 
-Route::resource('horarios-alimentacion', HorarioAlimentacionController::class)
-    ->parameters(['horarios-alimentacion' => 'horario']);
+    Route::resource('horarios-alimentacion', HorarioAlimentacionController::class)
+        ->parameters(['horarios-alimentacion' => 'horario']);
 
-Route::patch('horarios-alimentacion/{horario}/registrar-consumo', [HorarioAlimentacionController::class, 'registrarConsumo'])
-    ->name('horarios-alimentacion.registrar-consumo');
+    Route::patch('horarios-alimentacion/{horario}/registrar-consumo', [HorarioAlimentacionController::class, 'registrarConsumo'])
+        ->name('horarios-alimentacion.registrar-consumo');
+});
 
 /*
 |--------------------------------------------------------------------------
 | Módulo: Control clínico (Integrante 4)
 |--------------------------------------------------------------------------
 | La información clínica es un dato sensible: solo el veterinario y el
-| admin pueden acceder (middleware rol-veterinario). Incluye la alerta
-| de vacunas con próxima dosis vencida o próxima (tarea del 17 sep).
+| admin pueden acceder. Se agrega 'auth' para que sin sesión mande al
+| login en vez de un 403 directo. La unificación del nombre del
+| middleware (rol-veterinario -> rol:veterinario,admin) queda pendiente,
+| no es urgente: ya funciona correctamente.
 */
-Route::middleware('rol-veterinario')->group(function () {
+Route::middleware(['auth', 'rol-veterinario'])->group(function () {
     Route::get('aplicaciones-clinicas/alertas', [AplicacionClinicaController::class, 'alertas'])
         ->name('aplicaciones-clinicas.alertas');
 
@@ -56,38 +64,43 @@ Route::middleware('rol-veterinario')->group(function () {
         ->parameters(['aplicaciones-clinicas' => 'aplicacionClinica']);
 });
 
-Route::get('/limpieza', [TareaLimpiezaController::class, 'index'])->name('limpieza.index');
-Route::get('/limpieza/reporte', [TareaLimpiezaController::class, 'reporte'])->name('limpieza.reporte');
+/*
+|--------------------------------------------------------------------------
+| Módulo: Gestión de limpieza (Integrante 2)
+|--------------------------------------------------------------------------
+*/
+Route::middleware('auth')->group(function () {
+    Route::get('/limpieza', [TareaLimpiezaController::class, 'index'])->name('limpieza.index');
+    Route::get('/limpieza/reporte', [TareaLimpiezaController::class, 'reporte'])->name('limpieza.reporte');
 
-Route::middleware('rol:limpieza,admin')->group(function () {
-    Route::get('/limpieza/crear', [TareaLimpiezaController::class, 'create'])->name('limpieza.create');
-    Route::post('/limpieza', [TareaLimpiezaController::class, 'store'])->name('limpieza.store');
-    Route::get('/limpieza/{tareaLimpieza}/editar', [TareaLimpiezaController::class, 'edit'])->name('limpieza.edit');
-    Route::put('/limpieza/{tareaLimpieza}', [TareaLimpiezaController::class, 'update'])->name('limpieza.update');
-    Route::delete('/limpieza/{tareaLimpieza}', [TareaLimpiezaController::class, 'destroy'])->name('limpieza.destroy');
-    Route::patch('/limpieza/{tareaLimpieza}/verificar', [TareaLimpiezaController::class, 'verificar'])->name('limpieza.verificar');
+    Route::middleware('rol:limpieza,admin')->group(function () {
+        Route::get('/limpieza/crear', [TareaLimpiezaController::class, 'create'])->name('limpieza.create');
+        Route::post('/limpieza', [TareaLimpiezaController::class, 'store'])->name('limpieza.store');
+        Route::get('/limpieza/{tareaLimpieza}/editar', [TareaLimpiezaController::class, 'edit'])->name('limpieza.edit');
+        Route::put('/limpieza/{tareaLimpieza}', [TareaLimpiezaController::class, 'update'])->name('limpieza.update');
+        Route::delete('/limpieza/{tareaLimpieza}', [TareaLimpiezaController::class, 'destroy'])->name('limpieza.destroy');
+        Route::patch('/limpieza/{tareaLimpieza}/verificar', [TareaLimpiezaController::class, 'verificar'])->name('limpieza.verificar');
+    });
 });
 
 /*
 |--------------------------------------------------------------
 | Módulo: Entradas y promociones (Integrante 5 - Carlos)
 |--------------------------------------------------------------
-| Igual que el módulo de alimentación, el panel interno todavía no tiene
-| login general, así que la parte admin queda TEMPORALMENTE abierta.
-| TODO: cuando se fusione la rama de autenticación, envolver el grupo
-| "admin" de abajo con el middleware de rol que definan (revisar el
-| nombre exacto en app/Http/Kernel.php, probablemente algo como
-| 'rol-admin' o 'rol-recepcion', siguiendo el mismo patrón que
-| 'rol-veterinario' de arriba).
+| Parte pública: sin login, cara al visitante.
+| Parte administrativa: ahora protegida con auth + rol (admin, recepcion).
+| Se cierra aquí el TODO de Carlos, ya que hoy el foco del equipo es el
+| documento de análisis.
 */
 
 // --- Parte pública: sin login, cara al visitante ---
 Route::get('/entradas', [EntradaPublicoController::class, 'index'])->name('entradas.publico');
 Route::post('/entradas/comprar', [EntradaPublicoController::class, 'comprar'])->name('entradas.comprar');
 
-// --- Parte administrativa (TEMPORALMENTE sin middleware, ver TODO arriba) ---
+// --- Parte administrativa ---
 Route::prefix('admin')
     ->name('admin.')
+    ->middleware(['auth', 'rol:admin,recepcion'])
     ->group(function () {
         Route::resource('tipos-entrada', TipoEntradaController::class)->except(['show']);
         Route::resource('promociones', PromocionController::class)->except(['show']);
@@ -109,3 +122,8 @@ if (app()->environment('local')) {
         return redirect('/')->with('status', "Sesión de prueba iniciada como '{$rol}' ({$user->email}).");
     })->name('dev-login');
 }
+
+//Rutas de Login
+Route::get('/login', [LoginController::class, 'mostrarFormulario'])->name('login');
+Route::post('/login', [LoginController::class, 'login'])->name('login.attempt');
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');

@@ -45,6 +45,7 @@
         .errores { background: #fbe9e9; border: 1px solid #f0c2c2; color: #8a2b2b; padding: .75rem 1rem; border-radius: 8px; margin-bottom: 1rem; }
         .toolbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: .5rem; }
         .muted { color: #778071; font-size: .85rem; }
+        .btn-logout { background: none; border: none; color: inherit; text-decoration: underline; cursor: pointer; padding: 0; font: inherit; }
     </style>
 </head>
 <body>
@@ -59,10 +60,16 @@
             <a href="{{ route('inventario-alimentos.index') }}" class="{{ request()->routeIs('inventario-alimentos.*') ? 'activo' : '' }}">Inventario</a>
             <a href="{{ route('limpieza.index') }}" class="{{ request()->routeIs('limpieza.*') ? 'activo' : '' }}">Limpieza</a>
             <a href="{{ route('aplicaciones-clinicas.index') }}" class="{{ request()->routeIs('aplicaciones-clinicas.*') ? 'activo' : '' }}">Clínica</a>
+                <a href="{{ route('entradas.publico') }}" class="{{ request()->routeIs('entradas.*') || request()->routeIs('admin.*') ? 'activo' : '' }}">Entradas</a>
         </nav>
         <div class="muted" style="color:#d9e3d3;">
             @auth
                 {{ auth()->user()->name }} ({{ auth()->user()->rol?->nombre ?? 'sin rol' }})
+                ·
+                <form method="POST" action="{{ route('logout') }}" class="inline">
+                    @csrf
+                    <button type="submit" class="btn-logout">Cerrar sesión</button>
+                </form>
             @else
                 sin sesión
                 @if (app()->environment('local'))
