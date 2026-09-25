@@ -5,15 +5,41 @@
 @section('contenido')
     <div class="toolbar">
         <h1 style="margin:0; font-size:1.3rem;">Inventario de alimentos</h1>
-        <a href="{{ route('inventario-alimentos.create') }}" class="btn">+ Agregar alimento</a>
+        <div style="display:flex; gap:8px; flex-wrap:wrap;">
+            <a href="{{ route('horarios-alimentacion.reporte') }}" class="btn">Reporte de consumo</a>
+            <a href="{{ route('inventario-alimentos.create') }}" class="btn">+ Agregar alimento</a>
+        </div>
     </div>
 
     @if ($alertaStockBajo->isNotEmpty())
         <div class="errores">
-            <strong>⚠️ Stock bajo en {{ $alertaStockBajo->count() }} alimento(s):</strong>
-            {{ $alertaStockBajo->pluck('nombre_alimento')->join(', ') }}.
+            <strong>⚠️ Stock bajo: {{ $alertaStockBajo->count() }} alimento(s) están en el mínimo o por debajo</strong>
+
+            <table style="margin-top:10px; background:#ffffff;">
+                <thead>
+                    <tr>
+                        <th>Alimento</th>
+                        <th>Stock actual</th>
+                        <th>Stock mínimo</th>
+                        <th>Faltante para el mínimo</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($alertaStockBajo->sortByDesc(fn ($a) => $a->stock_minimo - $a->stock_actual) as $bajo)
+                        <tr>
+                            <td>
+                                <a href="{{ route('inventario-alimentos.show', $bajo) }}">{{ $bajo->nombre_alimento }}</a>
+                            </td>
+                            <td>{{ $bajo->stock_actual }} {{ $bajo->unidad_medida }}</td>
+                            <td>{{ $bajo->stock_minimo }} {{ $bajo->unidad_medida }}</td>
+                            <td><strong>{{ number_format(max(0, $bajo->stock_minimo - $bajo->stock_actual), 2) }} {{ $bajo->unidad_medida }}</strong></td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+
             @if (auth()->check() && auth()->user()->rol?->nombre !== 'admin')
-                Solo un usuario admin puede ajustar el stock mínimo.
+                <p style="margin:10px 0 0 0;">Solo un usuario admin puede ajustar el stock mínimo.</p>
             @endif
         </div>
     @endif

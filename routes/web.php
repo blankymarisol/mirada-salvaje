@@ -36,6 +36,9 @@ Route::middleware('auth')->group(function () {
     Route::resource('inventario-alimentos', InventarioAlimentoController::class)
         ->parameters(['inventario-alimentos' => 'alimento']);
 
+    Route::get('horarios-alimentacion/reporte', [HorarioAlimentacionController::class, 'reporte'])
+        ->name('horarios-alimentacion.reporte');
+
     Route::resource('horarios-alimentacion', HorarioAlimentacionController::class)
         ->parameters(['horarios-alimentacion' => 'horario']);
 
