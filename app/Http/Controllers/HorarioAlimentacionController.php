@@ -87,6 +87,39 @@ class HorarioAlimentacionController extends Controller
         return redirect()->route('horarios-alimentacion.index')->with('status', $mensaje);
     }
 
+    /**
+     * Reporte de consumo: agrupa por alimento el total consumido dentro
+     * de un rango de fechas, usando solo las tomas ya marcadas como
+     * "registrado" (consumo real, no solo programado).
+     */
+    public function reporte(Request $request)
+    {
+        $fechaInicio = $request->input('fecha_inicio', now()->startOfMonth()->toDateString());
+        $fechaFin = $request->input('fecha_fin', now()->toDateString());
+
+        $registros = HorarioAlimentacion::with('dieta.alimento')
+            ->where('registrado', true)
+            ->whereBetween('fecha', [$fechaInicio, $fechaFin])
+            ->get();
+
+        $reporte = $registros
+            ->groupBy(fn ($horario) => $horario->dieta->alimento->id)
+            ->map(function ($grupo) {
+                $alimento = $grupo->first()->dieta->alimento;
+
+                return (object) [
+                    'alimento' => $alimento->nombre_alimento,
+                    'unidad_medida' => $alimento->unidad_medida,
+                    'total_consumido' => $grupo->sum(fn ($horario) => $horario->cantidad_efectiva),
+                    'tomas_registradas' => $grupo->count(),
+                ];
+            })
+            ->sortByDesc('total_consumido')
+            ->values();
+
+        return view('horarios-alimentacion.reporte', compact('reporte', 'fechaInicio', 'fechaFin'));
+    }
+
     public function destroy(HorarioAlimentacion $horario)
     {
         $horario->delete();
