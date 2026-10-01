@@ -4,7 +4,7 @@ Proyecto del curso **Análisis de Sistemas II** (UMG), a cargo del Ing. Carlos V
 
 ## Integrantes
 
-| Nombre | Carné |
+| Nombre | Carnet |
 |---|---|
 | Blanky Marisol López Marroquín (Coordinadora) | 0905-23-5227 |
 | Melki Bladimir Ortiz Martínez | 0905-23-6329 |
