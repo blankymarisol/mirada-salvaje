@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>@yield('titulo', 'Mirada Salvaje') · Gestión de alimentación</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
     <style>
         :root { color-scheme: light; }
         * { box-sizing: border-box; }
@@ -60,7 +62,11 @@
             <a href="{{ route('inventario-alimentos.index') }}" class="{{ request()->routeIs('inventario-alimentos.*') ? 'activo' : '' }}">Inventario</a>
             <a href="{{ route('limpieza.index') }}" class="{{ request()->routeIs('limpieza.*') ? 'activo' : '' }}">Limpieza</a>
             <a href="{{ route('aplicaciones-clinicas.index') }}" class="{{ request()->routeIs('aplicaciones-clinicas.*') ? 'activo' : '' }}">Clínica</a>
-                <a href="{{ route('entradas.publico') }}" class="{{ request()->routeIs('entradas.*') || request()->routeIs('admin.*') ? 'activo' : '' }}">Entradas</a>
+            <a href="{{ route('entradas.publico') }}" class="{{ request()->routeIs('entradas.*') ? 'activo' : '' }}">Entradas</a>
+            @if (in_array(auth()->user()?->rol?->nombre, ['admin', 'recepcion']))
+            <a href="{{ route('admin.reportes.ventas') }}" class="{{ request()->routeIs('admin.*') ? 'activo' : '' }}">Reportes (admin)</a>
+            @endif
+        </nav>    
         </nav>
         <div class="muted" style="color:#d9e3d3;">
             @auth

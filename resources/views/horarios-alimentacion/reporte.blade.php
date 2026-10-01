@@ -22,6 +22,11 @@
         al <strong>{{ \Carbon\Carbon::parse($fechaFin)->format('d/m/Y') }}</strong>
     </p>
 
+    <p style="display:flex; gap:12px;">
+        <a href="{{ route('horarios-alimentacion.reporte.pdf', ['fecha_inicio' => $fechaInicio, 'fecha_fin' => $fechaFin]) }}">Descargar PDF</a>
+        <a href="{{ route('horarios-alimentacion.reporte.csv', ['fecha_inicio' => $fechaInicio, 'fecha_fin' => $fechaFin]) }}">Descargar Excel (CSV)</a>
+    </p>
+
     @if ($reporte->isEmpty())
         <p style="padding:12px; background:#f5f5f5; border-radius:6px;">
             No hay consumos registrados en este periodo.
@@ -51,4 +56,3 @@
         <a href="{{ route('horarios-alimentacion.index') }}">← Volver a horarios</a>
     </p>
 @endsection
-

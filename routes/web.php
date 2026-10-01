@@ -38,6 +38,10 @@ Route::middleware('auth')->group(function () {
 
     Route::get('horarios-alimentacion/reporte', [HorarioAlimentacionController::class, 'reporte'])
         ->name('horarios-alimentacion.reporte');
+    Route::get('horarios-alimentacion/reporte/pdf', [HorarioAlimentacionController::class, 'reportePdf'])
+        ->name('horarios-alimentacion.reporte.pdf');
+    Route::get('horarios-alimentacion/reporte/csv', [HorarioAlimentacionController::class, 'reporteCsv'])
+        ->name('horarios-alimentacion.reporte.csv');
 
     Route::resource('horarios-alimentacion', HorarioAlimentacionController::class)
         ->parameters(['horarios-alimentacion' => 'horario']);
@@ -75,7 +79,8 @@ Route::middleware(['auth', 'rol-veterinario'])->group(function () {
 Route::middleware('auth')->group(function () {
     Route::get('/limpieza', [TareaLimpiezaController::class, 'index'])->name('limpieza.index');
     Route::get('/limpieza/reporte', [TareaLimpiezaController::class, 'reporte'])->name('limpieza.reporte');
-
+    Route::get('/limpieza/reporte/pdf', [TareaLimpiezaController::class, 'reportePdf'])->name('limpieza.reporte.pdf');
+    Route::get('/limpieza/reporte/csv', [TareaLimpiezaController::class, 'reporteCsv'])->name('limpieza.reporte.csv');
     Route::middleware('rol:limpieza,admin')->group(function () {
         Route::get('/limpieza/crear', [TareaLimpiezaController::class, 'create'])->name('limpieza.create');
         Route::post('/limpieza', [TareaLimpiezaController::class, 'store'])->name('limpieza.store');
@@ -108,6 +113,8 @@ Route::prefix('admin')
         Route::resource('tipos-entrada', TipoEntradaController::class)->except(['show']);
         Route::resource('promociones', PromocionController::class)->except(['show']);
         Route::get('reportes/ventas', [ReporteVentasController::class, 'index'])->name('reportes.ventas');
+        Route::get('reportes/ventas/pdf', [ReporteVentasController::class, 'pdf'])->name('reportes.ventas.pdf');
+        Route::get('reportes/ventas/csv', [ReporteVentasController::class, 'csv'])->name('reportes.ventas.csv');
     });
 
 /*
