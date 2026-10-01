@@ -3,9 +3,12 @@
 @section('titulo', 'Horarios de alimentación')
 
 @section('contenido')
-    <div class="toolbar">
+        <div class="toolbar">
         <h1 style="margin:0; font-size:1.3rem;">Horarios de alimentación</h1>
-        <a href="{{ route('horarios-alimentacion.create') }}" class="btn">+ Programar horario</a>
+        <div style="display:flex; gap:8px;">
+            <a href="{{ route('horarios-alimentacion.reporte') }}" class="btn secundario">Ver reporte</a>
+            <a href="{{ route('horarios-alimentacion.create') }}" class="btn">+ Programar horario</a>
+        </div>
     </div>
 
     <div class="card">

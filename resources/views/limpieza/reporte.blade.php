@@ -3,9 +3,13 @@
 @section('titulo', 'Reporte de limpieza')
 
 @section('contenido')
-    <div class="toolbar">
+        <div class="toolbar">
         <h1 style="margin:0; font-size:1.3rem;">Reporte de cumplimiento por área y turno</h1>
-        <a href="{{ route('limpieza.index') }}" class="btn secundario">← Volver a tareas</a>
+        <div style="display:flex; gap:8px;">
+            <a href="{{ route('limpieza.reporte.pdf') }}" class="btn secundario">Descargar PDF</a>
+            <a href="{{ route('limpieza.reporte.csv') }}" class="btn secundario">Descargar Excel (CSV)</a>
+            <a href="{{ route('limpieza.index') }}" class="btn secundario">← Volver a tareas</a>
+        </div>
     </div>
 
     <div class="card">

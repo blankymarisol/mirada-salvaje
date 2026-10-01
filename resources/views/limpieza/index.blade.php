@@ -3,11 +3,14 @@
 @section('titulo', 'Tareas de limpieza')
 
 @section('contenido')
-    <div class="toolbar">
+        <div class="toolbar">
         <h1 style="margin:0; font-size:1.3rem;">Tareas de limpieza</h1>
-        @if (in_array(auth()->user()?->rol?->nombre, ['limpieza', 'admin']))
-            <a href="{{ route('limpieza.create') }}" class="btn">+ Nueva tarea</a>
-        @endif
+        <div style="display:flex; gap:8px;">
+            <a href="{{ route('limpieza.reporte') }}" class="btn secundario">Ver reporte</a>
+            @if (in_array(auth()->user()?->rol?->nombre, ['limpieza', 'admin']))
+                <a href="{{ route('limpieza.create') }}" class="btn">+ Nueva tarea</a>
+            @endif
+        </div>
     </div>
 
     @if (session('status'))

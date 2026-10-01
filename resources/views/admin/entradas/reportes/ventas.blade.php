@@ -13,9 +13,16 @@
             <label class="form-label">Hasta</label>
             <input type="date" name="hasta" class="form-control" value="{{ $hasta }}">
         </div>
-        <div class="col-auto align-self-end">
+                <div class="col-auto align-self-end">
             <button type="submit" class="btn btn-primary">Filtrar</button>
         </div>
+        <div class="col-auto align-self-end">
+            <a class="btn btn-outline-secondary" href="{{ route('admin.reportes.ventas.pdf', ['desde' => $desde, 'hasta' => $hasta]) }}">Descargar PDF</a>
+        </div>
+        <div class="col-auto align-self-end">
+            <a class="btn btn-outline-secondary" href="{{ route('admin.reportes.ventas.csv', ['desde' => $desde, 'hasta' => $hasta]) }}">Descargar Excel (CSV)</a>
+        </div>
+    </form>
     </form>
 
     <div class="mb-3">
