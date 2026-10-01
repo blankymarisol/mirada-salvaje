@@ -72,6 +72,20 @@ El seeder crea un usuario por rol, todos con la contraseña `password`:
 
 Inicia sesión desde `/login` con cualquiera de estos usuarios para probar el sistema según el rol.
 
+## Reportes
+
+Cada módulo expone su propio reporte, visible en pantalla y descargable en PDF y en Excel (CSV):
+
+| Reporte | Ruta | Quién lo puede ver | Qué muestra |
+|---|---|---|---|
+| Ventas de entradas | `/admin/reportes/ventas` | admin, recepción | Ventas por periodo: fecha, tipo de entrada, cantidad, promoción aplicada y total |
+| Consumo de inventario (alimentación) | `/horarios-alimentacion/reporte` | usuarios con sesión iniciada | Total consumido por alimento en un rango de fechas, solo tomas ya registradas |
+| Cumplimiento de limpieza | `/limpieza/reporte` | usuarios con sesión iniciada | Totales de tareas por área y turno, con porcentaje de cumplimiento |
+
+La exportación a PDF se genera con una clase propia (`App\Support\SimplePdfReport`), sin depender de ningún paquete externo de Composer. La exportación a Excel es un CSV con codificación UTF-8, compatible con Microsoft Excel.
+
+Las pruebas automatizadas de estos 3 reportes están en `tests/Feature/Reportes/`.
+
 ## Estructura del proyecto
 
 app/Http/Controllers/ Controladores por módulo (uno por dominio)
